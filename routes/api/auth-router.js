@@ -6,18 +6,19 @@ const userSchemas = require('../../models/User');
 
 const { validateBody } = require('../../decorators/index');
 
-const { authenticate } = require('../../middleware/index');
+const { authenticate, upload } = require('../../middleware/index');
 
-const authRouter = express.Router();
+const router = express.Router();
 
 const userSignupValidate = validateBody(userSchemas.userSignupSchema);
 const userSigninValidate = validateBody(userSchemas.userSigninSchema);
 
-authRouter.post("/signup", userSignupValidate, authController.signup);
+router.post("/signup", upload.single("avatarURL"), userSignupValidate, authController.signup);
 
-authRouter.post("/signin", userSigninValidate, authController.signin);
+router.post("/signin", userSigninValidate, authController.signin);
 
-authRouter.get("/current", authenticate, authController.getCurrent);
-authRouter.post("/logout", authenticate, authController.logout);
+router.get("/current", authenticate, authController.getCurrent);
 
-module.exports = authRouter;
+router.post("/logout", authenticate, authController.logout);
+
+module.exports = router;

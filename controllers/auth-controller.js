@@ -1,12 +1,9 @@
 const bcrypt = require('bcryptjs');
-
 const jwt = require('jsonwebtoken');
-
 const { User } = require('../models/User');
-
 const { HttpError } = require('../helpers/index');
-
 const { ctrlWrapper } = require('../decorators/index');
+const gravatar = require('gravatar');
 
 require('dotenv').config();
 
@@ -15,6 +12,7 @@ const { JWT_SECRET } = process.env;
 
 const signup = async (req, res) => {
     const { email, password } = req.body;
+    const avatarURL = gravatar.url(email, { protocol: 'https', s: '100' });
     const user = await User.findOne({ email });
     if (user) {
         throw HttpError(409, "Email already exist");
@@ -22,7 +20,7 @@ const signup = async (req, res) => {
 
     const hashPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await User.create({ ...req.body, password: hashPassword });
+    const newUser = await User.create({ ...req.body, avatarURL, password: hashPassword });
 
     res.status(201).json({
         // username: newUser.username,
@@ -80,5 +78,5 @@ module.exports = {
     signup: ctrlWrapper(signup),
     signin: ctrlWrapper(signin),
     getCurrent: ctrlWrapper(getCurrent),
-    logout: ctrlWrapper(logout),
+    logout: ctrlWrapper(logout)
 }
