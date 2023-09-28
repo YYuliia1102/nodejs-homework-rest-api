@@ -5,7 +5,7 @@ const validateBody = require('../../decorators/validateBody.js');
 
 const contactSchemas = require('../../models/Contact');
 
-const { isValidId, authenticate } = require('../../middleware/index');
+const { isValidId, authenticate, upload } = require('../../middleware/index');
 
 const contactAddValidate = validateBody(contactSchemas.contactAddSchema);
 
@@ -19,7 +19,7 @@ router.get('/', contactsController.getAll);
 
 router.get('/:contactId', isValidId, contactsController.getById);
 
-router.post('/', contactAddValidate, contactsController.add);
+router.post('/', upload.single("avatarURL"), contactAddValidate, contactsController.add);
 
 router.put('/:contactId', isValidId, contactAddValidate, contactsController.updateById);
 
